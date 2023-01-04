@@ -1,3 +1,7 @@
+"""
+generate yolo format labels (including depth as the last column) from kitti format labels
+"""
+
 import os
 import shutil
 import socket
@@ -137,10 +141,12 @@ def txt_kitti2yolo(image_path_list, label_path_list):
                 x1 = float(line[6]) / width
                 y1 = float(line[7]) / height
 
-                # depth
-                # clip negative depth to zero, so that depths are in [0, 146.85] # TODO: is it the best way?
+                # preprocessing for depth
+                # TODO: is it the best way?
+                # clip negative depth to zero, so that depths are in [0, 146.85]
+                d = max(0, float(line[13]))
                 # change to [0, 1] by dividing 146.85
-                d = max(0, float(line[13])) / 146.85
+                # d /= 146.85
 
                 # xyxy to xywh
                 w = x1 - x0
@@ -236,18 +242,23 @@ if __name__ == "__main__":
 
     hostname = socket.gethostname()
     if hostname == "HAITI":
-        repo_folder = "C:/Users/xin/OneDrive - bwstaff/xin/yolov5/"
+        # repo_folder = "C:/Users/xin/OneDrive - bwstaff/xin/yolov5/"
         dataset_folder = "D:/xin/datasets/CV/kitti/"
         # dataset_folder = "C:/Users/xin/Downloads/kitti"
     if hostname == "BALI":
-        repo_folder = "/home//OneDrive/xin/yolov5/"
-        # dataset_folder = "/storage/xin/datasets/CV/kitti/"
+        # repo_folder = "/home//OneDrive/xin/yolov5/"
+        dataset_folder = "/storage/xin/datasets/CV/kitti/"
         dataset_folder = "/home/xin/Datasets/kitti"
     if hostname == "DESKTOP-SJ7KPPD":
-        repo_folder = "C:/Users/Xin/OneDrive - bwstaff/xin/yolov5/"
-        repo_folder = "C:/Users/Xin/git_repo_local/yolov5_local/"
+        # repo_folder = "C:/Users/Xin/OneDrive - bwstaff/xin/yolov5/"
+        # repo_folder = "C:/Users/Xin/git_repo_local/yolov5_local/"
         dataset_folder = "C:/Users/Xin/Datasets/kitti"
-    repo_folder = Path(repo_folder)
+    if hostname == "chen-Ubuntu":
+        # repo_folder = "C:/Users/Xin/OneDrive - bwstaff/xin/yolov5/"
+        # repo_folder = "C:/Users/Xin/git_repo_local/yolov5_local/"
+        dataset_folder = ".."
+
+    # repo_folder = Path(repo_folder)
     dataset_folder = Path(dataset_folder)
     dataset_source_folder = (
         dataset_folder / "Source"
@@ -286,7 +297,7 @@ if __name__ == "__main__":
     val_txt_list = txt_kitti2yolo(kitti_val_image_list, kitti_val_label_list)
 
     # copy paste images and labels to new folder
-    kitti_folder = dataset_folder / "kitti"
+    kitti_folder = dataset_folder / "kitti_depth"
     image_dir = kitti_folder / "images"
     label_dir = kitti_folder / "labels"
     copy_paste_image(kitti_training_image_list, image_dir / "train")
