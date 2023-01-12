@@ -301,21 +301,21 @@ if __name__ == "__main__":
     print("Generating yolo format txt lists for val datasets...")
     val_txt_list = txt_kitti2yolo(kitti_val_image_list, kitti_val_label_list)
 
-    # copy paste images and labels (WITHOUT depth) to new folder
+    # copy paste images and labels to new folder
     kitti_folder = dataset_folder / "kitti"
     image_dir = kitti_folder / "images"
     label_dir = kitti_folder / "labels"
+    label_dir_depth = kitti_folder / "labels_depth"
+
+    # copy paste images
     copy_paste_image(kitti_training_image_list, image_dir / "train")
     copy_paste_image(kitti_val_image_list, image_dir / "val")
-    copy_paste_label(kitti_val_label_list, val_txt_list, label_dir / "train", depth=False)
+
+    # labels without depth
+    copy_paste_label(kitti_training_label_list, train_txt_list, label_dir / "train", depth=False)
     copy_paste_label(kitti_val_label_list, val_txt_list, label_dir / "val", depth=False)
 
-    # copy paste images and labels (WITH depth) to new folder
-    kitti_folder_depth = dataset_folder / "kitti_depth"
-    image_dir_depth = kitti_folder_depth / "images"
-    label_dir_depth = kitti_folder_depth / "labels"
-    copy_paste_image(kitti_training_image_list, image_dir_depth / "train")
-    copy_paste_image(kitti_val_image_list, image_dir_depth / "val")
+    # labels with depth
     copy_paste_label(kitti_training_label_list, train_txt_list, label_dir_depth / "train", depth=True)
     copy_paste_label(kitti_val_label_list, val_txt_list, label_dir_depth / "val", depth=True)
 
