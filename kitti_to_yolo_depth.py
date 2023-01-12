@@ -210,13 +210,14 @@ def move_image(path_list, dst):
         print("Done.")
 
 
-def copy_paste_label(path_list, txt_list, dst):
+def copy_paste_label(path_list, txt_list, dst, depth=False):
     """
     Copies files from path_list, to dst.
     Args:
       path_list list: list of paths of source label
       txt_list list: list of actual labels to copy
       dst pathlib.Path: destination folder
+      depth bool: True if depth is included in label
     """
     if dst.is_dir():
         print(f"Directory {dst} already exists.")
@@ -232,8 +233,12 @@ def copy_paste_label(path_list, txt_list, dst):
             label_file = dst / file.name
             with open(label_file, "w") as f:
                 for line in txt_list[i]:
-                    f.write(line + "\n")
+                    if depth:
+                        f.write(line + "\n")
+                    else: # remove depth
+                        f.write(' '.join(line.split()[:-1]) + "\n")
         print("Done.")
+
 
 
 if __name__ == "__main__":
@@ -296,11 +301,21 @@ if __name__ == "__main__":
     print("Generating yolo format txt lists for val datasets...")
     val_txt_list = txt_kitti2yolo(kitti_val_image_list, kitti_val_label_list)
 
-    # copy paste images and labels to new folder
-    kitti_folder = dataset_folder / "kitti_depth"
+    # copy paste images and labels (WITHOUT depth) to new folder
+    kitti_folder = dataset_folder / "kitti"
     image_dir = kitti_folder / "images"
     label_dir = kitti_folder / "labels"
     copy_paste_image(kitti_training_image_list, image_dir / "train")
     copy_paste_image(kitti_val_image_list, image_dir / "val")
-    copy_paste_label(kitti_training_label_list, train_txt_list, label_dir / "train")
-    copy_paste_label(kitti_val_label_list, val_txt_list, label_dir / "val")
+    copy_paste_label(kitti_val_label_list, val_txt_list, label_dir / "train", depth=False)
+    copy_paste_label(kitti_val_label_list, val_txt_list, label_dir / "val", depth=False)
+
+    # copy paste images and labels (WITH depth) to new folder
+    kitti_folder_depth = dataset_folder / "kitti_depth"
+    image_dir_depth = kitti_folder_depth / "images"
+    label_dir_depth = kitti_folder_depth / "labels"
+    copy_paste_image(kitti_training_image_list, image_dir_depth / "train")
+    copy_paste_image(kitti_val_image_list, image_dir_depth / "val")
+    copy_paste_label(kitti_training_label_list, train_txt_list, label_dir_depth / "train", depth=True)
+    copy_paste_label(kitti_val_label_list, val_txt_list, label_dir_depth / "val", depth=True)
+
