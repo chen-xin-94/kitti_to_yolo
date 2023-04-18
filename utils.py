@@ -234,7 +234,7 @@ def txt_kitti2yolo(image_path_list, label_path_list):
     return txt_list
 
 
-def copy_paste_image(path_list, dst):
+def copy_paste_files(path_list, dst):
     """
     Copies files from path_list to dst.
     Args:
